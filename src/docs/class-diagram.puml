@@ -1,0 +1,133 @@
+@startuml Class-Diagram-Library-API
+
+title <b>Diagrama de Classes</b>\nLibrary API
+
+hide circle
+hide empty members
+
+skinparam linetype ortho
+skinparam shadowing true
+skinparam roundcorner 12
+
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam classAttributeIconSize 0
+
+skinparam class {
+    BackgroundColor #FAFAFA
+    BorderColor #3F51B5
+    FontColor #222222
+}
+
+skinparam enum {
+    BackgroundColor #F5F5F5
+    BorderColor #3F51B5
+}
+
+skinparam note {
+    BackgroundColor #FFFDE7
+    BorderColor #C0A000
+    FontColor #333333
+}
+
+skinparam ArrowColor #555555
+skinparam ArrowThickness 1.2
+
+enum Role {
+    ADMIN
+    CLIENT
+}
+
+enum LoanStatus {
+    ACTIVE
+    RETURNED
+    OVERDUE
+}
+
+class User {
+    - id : Long
+    - name : String
+    - email : String
+    - password : String
+    - role : Role
+    - createdAt : LocalDateTime
+    --
+    + isAdmin() : boolean
+}
+
+class Author {
+    - id : Long
+    - name : String
+}
+
+class Category {
+    - id : Long
+    - name : String
+}
+
+class Book {
+    - id : Long
+    - title : String
+    - isbn : String
+    - publicationYear : Integer
+    - totalCopies : Integer
+    - availableCopies : Integer
+    --
+    + isAvailable() : boolean
+    + decreaseAvailableCopies() : void
+    + increaseAvailableCopies() : void
+}
+
+class Loan {
+    - id : Long
+    - loanDate : LocalDateTime
+    - dueDate : LocalDate
+    - returnDate : LocalDateTime
+    - status : LoanStatus
+    --
+    + isOverdue() : boolean
+    + markAsReturned() : void
+}
+
+User "1" --> "1" Role : role
+Loan "1" --> "1" LoanStatus : status
+
+Author "1" o-- "*" Book : writes
+Book "*" -- "*" Category : classified as
+User "1" o-- "*" Loan : makes
+Book "1" o-- "*" Loan : is loaned in
+
+note right of Book
+<b>RN01</b>
+
+isAvailable() verifica
+availableCopies > 0.
+
+<b>RN11</b>
+
+ISBN deve ser único
+no catálogo.
+end note
+
+note right of Loan
+<b>RN02</b>
+
+dueDate = loanDate
++ 14 dias.
+
+<b>RN03</b>
+
+isOverdue() compara
+dueDate com a data
+atual enquanto o
+status é ACTIVE.
+end note
+
+note right of User
+<b>RN07</b>
+
+email é único e
+utilizado como login.
+end note
+
+@enduml

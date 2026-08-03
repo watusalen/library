@@ -1,0 +1,138 @@
+@startuml DER-Library-API
+
+title <b>Diagrama Entidade-Relacionamento</b>\nLibrary API
+
+hide circle
+hide methods
+skinparam linetype ortho
+
+skinparam shadowing true
+skinparam roundcorner 12
+
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+
+skinparam entity {
+BackgroundColor #FAFAFA
+BorderColor #3F51B5
+FontColor #222222
+FontSize 13
+}
+
+skinparam note {
+BackgroundColor #FFFDE7
+BorderColor #C0A000
+FontColor #333333
+}
+
+skinparam ArrowColor #555555
+skinparam ArrowThickness 1.4
+
+entity "USER" as user {
+  * id : BIGSERIAL <<PK>>
+  --
+  * name : VARCHAR(100)
+  * email : VARCHAR(150) <<UNIQUE>>
+  * password : VARCHAR(255)
+  * role : VARCHAR(20)
+  * created_at : TIMESTAMP
+}
+
+entity "AUTHOR" as author {
+  * id : BIGSERIAL <<PK>>
+  --
+  * name : VARCHAR(150)
+}
+
+entity "CATEGORY" as category {
+  * id : BIGSERIAL <<PK>>
+  --
+  * name : VARCHAR(100)
+}
+
+entity "BOOK" as book {
+  * id : BIGSERIAL <<PK>>
+  --
+  * title : VARCHAR(200)
+  * isbn : VARCHAR(20) <<UNIQUE>>
+  * publication_year : INTEGER
+  * total_copies : INTEGER
+  * available_copies : INTEGER
+  --
+  * author_id : BIGINT <<FK>>
+}
+
+entity "BOOK_CATEGORY" as book_category {
+  * book_id : BIGINT <<FK>>
+  * category_id : BIGINT <<FK>>
+  --
+PK (book_id, category_id)
+}
+
+entity "LOAN" as loan {
+  * id : BIGSERIAL <<PK>>
+  --
+  * user_id : BIGINT <<FK>>
+  * book_id : BIGINT <<FK>>
+  * loan_date : TIMESTAMP
+  * due_date : DATE
+  return_date : TIMESTAMP
+  * status : VARCHAR(20)
+}
+
+author      ||--o{ book          : writes
+book        ||--o{ book_category : belongs_to
+category    ||--o{ book_category : classifies
+user        ||--o{ loan          : makes
+book        ||--o{ loan          : is_loaned_in
+
+note right of author
+<b>RN05</b>
+
+Um autor não pode ser
+excluído enquanto possuir
+livro vinculado.
+end note
+
+note right of category
+<b>RN06</b>
+
+Uma categoria não pode ser
+excluída enquanto possuir
+livro vinculado.
+end note
+
+note right of book
+<b>RN11</b>
+
+O ISBN deve ser único
+no acervo.
+end note
+
+note right of loan
+<b>RN02</b>
+
+Prazo de devolução:
+14 dias corridos.
+
+<b>RN03</b>
+
+Valores de status:
+• ACTIVE
+• RETURNED
+• OVERDUE
+
+<b>RN10</b>
+
+Um livro não pode ser
+excluído enquanto possuir
+empréstimo ativo.
+end note
+
+note bottom of book_category
+Relacionamento N:N
+
+Book <-> Category
+end note
+
+@enduml
