@@ -6,6 +6,11 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Categoria usada para classificar um ou mais {@link Book livros} do acervo.
+ * <p>
+ * Não pode ser excluída enquanto possuir ao menos um livro vinculado (RN06).
+ */
 @Entity
 @Table(name = "category")
 public class Category implements Serializable {
@@ -42,6 +47,11 @@ public class Category implements Serializable {
         this.name = name;
     }
 
+    /**
+     * Compara categorias pela identidade (id), como recomendado para
+     * entidades JPA — duas categorias são iguais se representarem o mesmo
+     * registro no banco, independentemente dos demais campos.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

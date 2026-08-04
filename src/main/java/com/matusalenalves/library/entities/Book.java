@@ -8,6 +8,13 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Livro do acervo, vinculado a um {@link Author} e a uma ou mais
+ * {@link Category categorias}.
+ * <p>
+ * O ISBN é único no acervo (RN11) e não pode ser excluído enquanto possuir
+ * ao menos um {@link Loan empréstimo} ativo (RN10).
+ */
 @Entity
 @Table(name = "book")
 public class Book implements Serializable {
@@ -17,16 +24,9 @@ public class Book implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(
-            length = 200,
-            nullable = false
-    )
+    @Column(length = 200, nullable = false)
     private String title;
-    @Column(
-            unique = true,
-            length = 20,
-            nullable = false
-    )
+    @Column(unique = true, length = 20, nullable = false)
     private String isbn;
     @Column(nullable = false)
     private Integer publicationYear;
@@ -36,10 +36,7 @@ public class Book implements Serializable {
     private Integer availableCopies;
 
     @ManyToOne
-    @JoinColumn(
-            name = "author_id",
-            nullable = false
-    )
+    @JoinColumn(name = "author_id", nullable = false)
     private Author author;
     @ManyToMany
     @JoinTable(
@@ -126,10 +123,21 @@ public class Book implements Serializable {
         this.categories = categories;
     }
 
+    /**
+     * Indica se há ao menos um exemplar disponível para empréstimo (RN01).
+     *
+     * @return {@code true} se {@code availableCopies} for maior que zero
+     */
     public boolean isAvailable() {
         return getAvailableCopies() > 0;
     }
 
+    /**
+     * Reduz em uma unidade a quantidade de exemplares disponíveis,
+     * chamado ao registrar um novo empréstimo (RF22).
+     *
+     * @throws IllegalStateException se não houver exemplar disponível
+     */
     public void decreaseAvailableCopies() {
         if (!isAvailable()) {
             throw new IllegalStateException("It is not possible to decrement a book because there are no available copies.");
@@ -137,6 +145,13 @@ public class Book implements Serializable {
         availableCopies--;
     }
 
+    /**
+     * Aumenta em uma unidade a quantidade de exemplares disponíveis,
+     * chamado ao registrar a devolução de um empréstimo (RF22).
+     *
+     * @throws IllegalStateException se a quantidade disponível já for igual
+     *                               à quantidade total de exemplares
+     */
     public void increaseAvailableCopies() {
         if (!(totalCopies > availableCopies)) {
             throw new IllegalStateException("It is not possible to add a new copy of this book because it would exceed the actual number of copies.");
@@ -144,6 +159,11 @@ public class Book implements Serializable {
         availableCopies++;
     }
 
+    /**
+     * Compara livros pela identidade (id), como recomendado para
+     * entidades JPA — dois livros são iguais se representarem o mesmo
+     * registro no banco, independentemente dos demais campos.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

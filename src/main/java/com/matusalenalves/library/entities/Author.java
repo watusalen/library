@@ -6,6 +6,11 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Autor de um ou mais {@link Book livros} do acervo.
+ * <p>
+ * Não pode ser excluído enquanto possuir ao menos um livro vinculado (RN05).
+ */
 @Entity
 @Table(name = "author")
 public class Author implements Serializable {
@@ -42,6 +47,11 @@ public class Author implements Serializable {
         this.name = name;
     }
 
+    /**
+     * Compara autores pela identidade (id), como recomendado para
+     * entidades JPA — dois autores são iguais se representarem o mesmo
+     * registro no banco, independentemente dos demais campos.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

@@ -9,6 +9,12 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Usuário do sistema, autenticado por e-mail e senha (RF01, RF02).
+ * <p>
+ * Mapeada para a tabela {@code tb_user}, e não {@code user}, pois {@code user}
+ * é palavra reservada no PostgreSQL.
+ */
 @Entity
 @Table(name = "tb_user")
 public class User implements Serializable {
@@ -18,33 +24,17 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(
-            length = 100,
-            nullable = false
-    )
+    @Column(length = 100, nullable = false)
     private String name;
-    @Column(
-            unique = true,
-            length = 150,
-            nullable = false
-    )
+    @Column(unique = true, length = 150, nullable = false)
     private String email;
-    @Column(
-            length = 255,
-            nullable = false
-    )
+    @Column(length = 255, nullable = false)
     private String password;
-    @Column(
-            length = 20,
-            nullable = false
-    )
+    @Column(length = 20, nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
     @CreationTimestamp
-    @Column(
-            nullable = false,
-            updatable = false
-    )
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     public User() {
@@ -106,10 +96,20 @@ public class User implements Serializable {
         this.createdAt = createdAt;
     }
 
+    /**
+     * Indica se o usuário possui perfil {@link Role#ADMIN} (RN08).
+     *
+     * @return {@code true} se o perfil do usuário for {@code ADMIN}
+     */
     public boolean isAdmin() {
         return role.equals(Role.ADMIN);
     }
 
+    /**
+     * Compara usuários pela identidade (id), como recomendado para
+     * entidades JPA — dois usuários são iguais se representarem o mesmo
+     * registro no banco, independentemente dos demais campos.
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
