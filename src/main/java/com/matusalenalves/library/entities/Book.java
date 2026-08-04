@@ -41,7 +41,6 @@ public class Book implements Serializable {
             nullable = false
     )
     private Author author;
-
     @ManyToMany
     @JoinTable(
             name = "book_category",
