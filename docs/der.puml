@@ -28,7 +28,7 @@ FontColor #333333
 skinparam ArrowColor #555555
 skinparam ArrowThickness 1.4
 
-entity "USER" as user {
+entity "TB_USER" as user {
   * id : BIGSERIAL <<PK>>
   --
   * name : VARCHAR(100)
