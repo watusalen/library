@@ -28,4 +28,26 @@ public interface BookRepository extends JpaRepository<Book, Long> {
      * @return livros que atendem simultaneamente aos três filtros.
      */
     List<Book> findByTitleContainingIgnoreCaseAndAuthorIdAndCategoriesId(String title, Long authorId, Long categoryId);
+
+    /**
+     * Verifica se existe algum livro vinculado ao autor informado.
+     * <p>
+     * Usado antes de excluir um autor, para impedir a exclusão enquanto
+     * houver livro vinculado (RN05).
+     *
+     * @param authorId identificador do autor.
+     * @return {@code true} se houver ao menos um livro vinculado ao autor.
+     */
+    boolean existsByAuthorId(Long authorId);
+
+    /**
+     * Verifica se existe algum livro vinculado à categoria informada.
+     * <p>
+     * Usado antes de excluir uma categoria, para impedir a exclusão enquanto
+     * houver livro vinculado (RN06).
+     *
+     * @param categoriesId identificador da categoria.
+     * @return {@code true} se houver ao menos um livro vinculado à categoria.
+     */
+    boolean existsByCategoriesId(Long categoriesId);
 }
