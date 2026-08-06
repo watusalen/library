@@ -11,8 +11,9 @@ import java.util.List;
  * Acesso a dados de {@link Loan}.
  * <p>
  * Além das operações de CRUD herdadas de {@link JpaRepository}, concentra as
- * consultas usadas para montar histórico de empréstimos (RF20, RF21) e para
- * verificar pendências em atraso antes de um novo empréstimo (RN04).
+ * consultas usadas para montar histórico de empréstimos (RF20, RF21), para
+ * verificar pendências em atraso antes de um novo empréstimo (RN04) e para
+ * checar empréstimo ativo antes de excluir um livro (RN10).
  */
 @Repository
 public interface LoanRepository extends JpaRepository<Loan, Long> {
@@ -42,4 +43,17 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
      * @return empréstimos do usuário que estejam na situação informada.
      */
     List<Loan> findByUserIdAndStatus(Long id, LoanStatus status);
+
+    /**
+     * Verifica se existe algum empréstimo de um livro na situação informada.
+     * <p>
+     * Usado antes de excluir um livro, para impedir a exclusão enquanto
+     * houver empréstimo ativo (RN10) — deve ser chamado com
+     * {@link LoanStatus#ACTIVE}.
+     *
+     * @param bookId identificador do livro
+     * @param status situação do empréstimo a ser filtrada
+     * @return {@code true} se houver ao menos um empréstimo do livro nessa situação
+     */
+    boolean existsByBookIdAndStatus(Long bookId, LoanStatus status);
 }
