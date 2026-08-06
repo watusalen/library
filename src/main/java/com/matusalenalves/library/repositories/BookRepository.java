@@ -2,6 +2,8 @@ package com.matusalenalves.library.repositories;
 
 import com.matusalenalves.library.entities.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,15 +21,24 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     /**
      * Busca livros combinando filtros de título, autor e categoria (RF09).
      * <p>
-     * A comparação do título é parcial e não diferencia maiúsculas de
+     * Cada filtro é opcional e pode ser combinado livremente com os demais:
+     * um parâmetro {@code null} simplesmente não é aplicado à busca. A
+     * comparação do título é parcial e não diferencia maiúsculas de
      * minúsculas, conforme o fluxo alternativo 1a da UC04.
      *
-     * @param title      trecho do título a ser buscado.
-     * @param authorId   identificador do autor.
-     * @param categoryId identificador da categoria.
-     * @return livros que atendem simultaneamente aos três filtros.
+     * @param title      trecho do título a ser buscado, ou {@code null} para não filtrar por título
+     * @param authorId   identificador do autor, ou {@code null} para não filtrar por autor
+     * @param categoryId identificador da categoria, ou {@code null} para não filtrar por categoria
+     * @return livros que atendem a todos os filtros informados
      */
-    List<Book> findByTitleContainingIgnoreCaseAndAuthorIdAndCategoriesId(String title, Long authorId, Long categoryId);
+    @Query("""
+        SELECT DISTINCT b FROM Book b
+        LEFT JOIN b.categories c
+        WHERE (:title IS NULL OR LOWER(b.title) LIKE LOWER(CONCAT('%', :title, '%')))
+          AND (:authorId IS NULL OR b.author.id = :authorId)
+          AND (:categoryId IS NULL OR c.id = :categoryId)
+        """)
+    List<Book> search(@Param("title") String title, @Param("authorId") Long authorId, @Param("categoryId") Long categoryId);
 
     /**
      * Verifica se existe algum livro vinculado ao autor informado.
