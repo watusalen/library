@@ -127,7 +127,8 @@ src/main/java/com/matusalenalves/library/
     ├── SecurityConfig.java
     ├── JwtService.java
     ├── JwtAuthenticationFilter.java
-    └── CustomUserDetailsService.java
+    ├── CustomUserDetailsService.java
+    └── CustomUserDetails.java
 ```
 
 ## 4. Responsabilidade de cada pacote
@@ -145,7 +146,7 @@ src/main/java/com/matusalenalves/library/
 | `dto/request`          | Objetos de entrada da API, validados com Bean Validation conforme a seção 10 do documento de requisitos                                                                                                                                                                                                                                                             | RNF10; seção 10 do documento de requisitos              |
 | `dto/response`         | Objetos de saída da API, incluindo `ErrorResponse` (formato padronizado de erro, RF28/RNF17) e `PageResponse` (formato padronizado de paginação, RNF12)                                                                                                                                                                                                             | RF28; RNF12, RNF17; seção 9 do documento de requisitos  |
 | `mapper`               | Conversão entre `entities` e `dto`, isolando a representação interna do contrato público da API                                                                                                                                                                                                                                                                     | RNF14                                                   |
-| `security`             | Autenticação e autorização via JWT: filtro de requisição, geração/validação de token, configuração de acesso por perfil                                                                                                                                                                                                                                             | RF02; RNF04, RNF06, RNF07; RN08, RN09                   |
+| `security`             | Autenticação e autorização via JWT: adaptação do usuário para o Spring Security (`CustomUserDetails`/`CustomUserDetailsService`), filtro de requisição, geração/validação de token e configuração de acesso por perfil                                                                                                                                             | RF02; RNF04, RNF06, RNF07; RN08, RN09                   |
 
 ## 5. Regra de dependência entre camadas
 
