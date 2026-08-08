@@ -1,4 +1,4 @@
-package com.matusalenalves.library.security;
+package com.matusalenalves.library.security.userdetails;
 
 import com.matusalenalves.library.entities.User;
 import com.matusalenalves.library.repositories.UserRepository;
