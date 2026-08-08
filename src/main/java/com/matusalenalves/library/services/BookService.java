@@ -2,6 +2,7 @@ package com.matusalenalves.library.services;
 
 import com.matusalenalves.library.dto.request.BookRequest;
 import com.matusalenalves.library.dto.response.BookResponse;
+import com.matusalenalves.library.dto.response.PageResponse;
 import com.matusalenalves.library.entities.Author;
 import com.matusalenalves.library.entities.Book;
 import com.matusalenalves.library.entities.Category;
@@ -15,10 +16,10 @@ import com.matusalenalves.library.services.exceptions.BusinessRuleException;
 import com.matusalenalves.library.services.exceptions.DataBaseException;
 import com.matusalenalves.library.services.exceptions.ResourceNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,20 +45,18 @@ public class BookService {
     }
 
     /**
-     * Consulta o acervo combinando filtros de título, autor e categoria
-     * (RF09), com paginação ainda não aplicada.
+     * Consulta o acervo combinando filtros de título, autor e categoria,
+     * paginado (RF09, RNF12).
      *
      * @param title      trecho do título a ser buscado, ou {@code null} para não filtrar por título
      * @param authorId   identificador do autor, ou {@code null} para não filtrar por autor
      * @param categoryId identificador da categoria, ou {@code null} para não filtrar por categoria
-     * @return livros que atendem aos filtros informados, convertidos para o DTO de resposta
+     * @param pageable   página, tamanho e ordenação solicitados
+     * @return a página de livros que atendem aos filtros informados, convertida para o DTO de resposta
      */
     @Transactional(readOnly = true)
-    public List<BookResponse> search(String title, Long authorId, Long categoryId) {
-        return bookRepository.search(title, authorId, categoryId)
-                .stream()
-                .map(book -> BookMapper.toResponse(book))
-                .toList();
+    public PageResponse<BookResponse> search(String title, Long authorId, Long categoryId, Pageable pageable) {
+        return PageResponse.of(bookRepository.search(title, authorId, categoryId, pageable).map(BookMapper::toResponse));
     }
 
     /**

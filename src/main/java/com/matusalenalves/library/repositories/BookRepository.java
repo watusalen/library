@@ -1,12 +1,12 @@
 package com.matusalenalves.library.repositories;
 
 import com.matusalenalves.library.entities.Book;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 /**
  * Acesso a dados de {@link Book}.
@@ -29,7 +29,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
      * @param title      trecho do título a ser buscado, ou {@code null} para não filtrar por título
      * @param authorId   identificador do autor, ou {@code null} para não filtrar por autor
      * @param categoryId identificador da categoria, ou {@code null} para não filtrar por categoria
-     * @return livros que atendem a todos os filtros informados
+     * @param pageable   página, tamanho e ordenação solicitados
+     * @return a página de livros que atendem a todos os filtros informados
      */
     @Query("""
         SELECT DISTINCT b FROM Book b
@@ -38,7 +39,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
           AND (:authorId IS NULL OR b.author.id = :authorId)
           AND (:categoryId IS NULL OR c.id = :categoryId)
         """)
-    List<Book> search(@Param("title") String title, @Param("authorId") Long authorId, @Param("categoryId") Long categoryId);
+    Page<Book> search(@Param("title") String title, @Param("authorId") Long authorId, @Param("categoryId") Long categoryId, Pageable pageable);
 
     /**
      * Verifica se existe algum livro vinculado ao autor informado.

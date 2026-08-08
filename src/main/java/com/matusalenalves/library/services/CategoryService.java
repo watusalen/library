@@ -2,6 +2,7 @@ package com.matusalenalves.library.services;
 
 import com.matusalenalves.library.dto.request.CategoryRequest;
 import com.matusalenalves.library.dto.response.CategoryResponse;
+import com.matusalenalves.library.dto.response.PageResponse;
 import com.matusalenalves.library.entities.Category;
 import com.matusalenalves.library.mapper.CategoryMapper;
 import com.matusalenalves.library.repositories.CategoryRepository;
@@ -10,10 +11,9 @@ import com.matusalenalves.library.services.exceptions.BusinessRuleException;
 import com.matusalenalves.library.services.exceptions.DataBaseException;
 import com.matusalenalves.library.services.exceptions.ResourceNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Regras de negócio para categorias (RF14-RF17), incluindo a checagem da
@@ -31,17 +31,14 @@ public class CategoryService {
     }
 
     /**
-     * Lista todas as categorias cadastradas (RF17).
+     * Lista as categorias cadastradas, paginadas (RF17, RNF12).
      *
-     * @return todas as categorias, convertidas para o DTO de resposta
+     * @param pageable página, tamanho e ordenação solicitados
+     * @return a página de categorias correspondente, convertida para o DTO de resposta
      */
     @Transactional(readOnly = true)
-    public List<CategoryResponse> findAll() {
-        return categoryRepository
-                .findAll()
-                .stream()
-                .map(category -> CategoryMapper.toResponse(category))
-                .toList();
+    public PageResponse<CategoryResponse> findAll(Pageable pageable) {
+        return PageResponse.of(categoryRepository.findAll(pageable).map(CategoryMapper::toResponse));
     }
 
     /**

@@ -2,6 +2,7 @@ package com.matusalenalves.library.services;
 
 import com.matusalenalves.library.dto.request.AuthorRequest;
 import com.matusalenalves.library.dto.response.AuthorResponse;
+import com.matusalenalves.library.dto.response.PageResponse;
 import com.matusalenalves.library.entities.Author;
 import com.matusalenalves.library.mapper.AuthorMapper;
 import com.matusalenalves.library.repositories.AuthorRepository;
@@ -10,10 +11,9 @@ import com.matusalenalves.library.services.exceptions.BusinessRuleException;
 import com.matusalenalves.library.services.exceptions.DataBaseException;
 import com.matusalenalves.library.services.exceptions.ResourceNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * Regras de negócio para autores (RF10-RF13), incluindo a checagem da RN05
@@ -31,17 +31,14 @@ public class AuthorService {
     }
 
     /**
-     * Lista todos os autores cadastrados (RF13).
+     * Lista os autores cadastrados, paginados (RF13, RNF12).
      *
-     * @return todos os autores, convertidos para o DTO de resposta
+     * @param pageable página, tamanho e ordenação solicitados
+     * @return a página de autores correspondente, convertida para o DTO de resposta
      */
     @Transactional(readOnly = true)
-    public List<AuthorResponse> findAll() {
-        return authorRepository
-                .findAll()
-                .stream()
-                .map(author -> AuthorMapper.toResponse(author))
-                .toList();
+    public PageResponse<AuthorResponse> findAll(Pageable pageable) {
+        return PageResponse.of(authorRepository.findAll(pageable).map(AuthorMapper::toResponse));
     }
 
     /**
