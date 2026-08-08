@@ -1,5 +1,7 @@
-package com.matusalenalves.library.security;
+package com.matusalenalves.library.security.jwt;
 
+import com.matusalenalves.library.security.userdetails.CustomUserDetailsService;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,7 +56,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        String email = jwtService.extractEmail(token);
+        String email;
+
+        try {
+            email = jwtService.extractEmail(token);
+        } catch (JwtException | IllegalArgumentException e) {
+            // Token malformado, expirado ou com assinatura inválida: segue sem
+            // autenticar, deixando o restante do Spring Security decidir se a
+            // rota exige login (401) ou permissão (403).
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);

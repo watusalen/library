@@ -1,4 +1,4 @@
-package com.matusalenalves.library.security;
+package com.matusalenalves.library.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

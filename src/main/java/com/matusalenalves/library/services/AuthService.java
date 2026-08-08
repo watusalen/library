@@ -6,7 +6,7 @@ import com.matusalenalves.library.dto.response.TokenResponse;
 import com.matusalenalves.library.entities.User;
 import com.matusalenalves.library.entities.enums.Role;
 import com.matusalenalves.library.repositories.UserRepository;
-import com.matusalenalves.library.security.JwtService;
+import com.matusalenalves.library.security.jwt.JwtService;
 import com.matusalenalves.library.services.exceptions.EmailAlreadyExistsException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
